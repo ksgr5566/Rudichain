@@ -1,108 +1,65 @@
 package com.rudichain.backend;
 
-//how to get dependencies?
+import com.rudichain.cryptography.Hash;
 
-public class blockchain {
+import java.util.ArrayList;
+import com.google.gson.Gson; 
+
+public class blockchain{
+  ArrayList<block> chain;
+
+  blockchain(){
+    this.chain = new ArrayList<block>();
+    chain.add(block.genesis());
+  }
+
+  void addBlock(String data){
+    final block newBlock = block.mineBlock(this.chain.get(this.chain.size()-1),data);
+    this.chain.add(newBlock);
+  }
+
+  static boolean isValidChain(blockchain current){
+
+    //checking if they have the same genesis block
+    Gson gson = new Gson();
+    String json = gson.toJson(current.chain.get(0));
+    String genesis_json = gson.toJson(block.genesis());
+    if(!(json.equals(genesis_json))) return false;
+
+    for(int i=1; i<current.chain.size(); i++){
+
+      //checking for last hash of curr block and hash of prev block
+      if(!current.chain.get(i-1).hash.equals(current.chain.get(i).lastHash)) return false;
+
+      //checking if the hash is accurate
+      String accurateHash = Hash.SHA256(current.chain.get(i).lastHash, 
+                                        current.chain.get(i).data, 
+                                        current.chain.get(i).timestamp, 
+                                        current.chain.get(i).nonce, 
+                                        current.chain.get(i).difficulty
+                                        );
+
+      if(!(current.chain.get(i).hash.equals(accurateHash))) return false;
+
+      //checking for the difficulty difference
+      if (Math.abs(current.chain.get(i-1).difficulty - current.chain.get(i).difficulty) > 1) return false;
+    }
+
+    return true;
+  }
+
+  void replaceChain(blockchain toReplace){
+
+    if(toReplace.chain.size()<this.chain.size()) return;
     
-//this.chain
+    if(!isValidChain(toReplace)) return;
 
-void addBlock({data}){
+    //toadd: validateTransaactions and onSuccess
+    
+    this.chain = toReplace.chain;
+
+  }
+
+ //add validate transaction data function
 
 }
-
-void replaceChain(chain, validateTransactions, onSuccess) {
-    if (chain.length <= this.chain.length) { 
-        //this is referring to which object?
-      System.out.println("The incoming chain must be longer");
-      return;
-    }
-    if (!Blockchain.isValidChain(chain)) {
-        System.out.println("The incoming chain must be valid");
-        return;
-      }
-
-      //isvalidchain func.?
-      if (validateTransactions && !this.validTransactionData({ chain })) { 
-    System.out.println("The incoming chain has invalid data");
-        return;
-      } 
-      if (onSuccess) onSuccess();
-
-      System.out.println("replacing chain with" + chain);
-      this.chain = chain;//doubt.
-    }
-
-   boolean validTransactionData({ chain }) {//passing chain? //boolean type
-        for (int i=1; i<chain.length; i++) {
-          const block = chain[i]; //static final instead of const?
-          const transactionSet = new Set();
-          int rewardTransactionCount = 0;  
-    
-          for (let transaction of block.data) {// ?
-            if (transaction.input.address == REWARD_INPUT.address) {
-              rewardTransactionCount += 1;
-    
-              if (rewardTransactionCount > 1) {
-                System.out.println("Miner rewards exceed limit");
-                return false;
-              }
-    
-              if (Object.values(transaction.outputMap)[0] != MINING_REWARD) {
-                System.out.println("Miner reward amount is invalid");
-                return false;
-              }
-            } else {
-              if (!Transaction.validTransaction(transaction)) {
-                System.out.println("Invalid transaction");
-                return false;
-              }
-    
-              const trueBalance = Wallet.calculateBalance({ //static final?
-                chain: this.chain,
-                address: transaction.input.address
-              });
-    
-              if (transaction.input.amount != trueBalance) {
-                System.out.println("Invalid input amount");
-                return false;
-              }
-    
-              if (transactionSet.has(transaction)) {
-                System.out.println("An identical transaction appears more than once in the block");
-                return false;
-              } else {
-                transactionSet.add(transaction);
-              }
-            }
-          }
-        }
-    
-        return true;
-      }
-
-      static isValidChain(chain) {
-        if (JSON.stringify(chain[0]) != JSON.stringify(Block.genesis())) {
-          return false;
-        }
-    
-        for (int i=1; i<chain.length; i++) {//
-          const { timestamp, lastHash, hash, nonce, difficulty, data } = chain[i];
-          const actualLastHash = chain[i-1].hash;
-          const lastDifficulty = chain[i-1].difficulty;
-          //setting variables..
-    
-          if (lastHash != actualLastHash) return false;
-    
-          const validatedHash = cryptoHash(timestamp, lastHash, data, nonce, difficulty);
-    
-          if (hash != validatedHash) return false;
-    
-          if (Math.abs(lastDifficulty - difficulty) > 1) return false;
-        }
-    
-        return true;
-      }
-
-    }
-
-    //is there any export statement in java for exporting this blockchain class?
