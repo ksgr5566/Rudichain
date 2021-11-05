@@ -19,9 +19,9 @@ import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResu
 import com.rudichain.rudichain.backend.blockchain;
 
 enum credentials{
-    PUBLISH_KEY("mypublishkey"),
-    SUBSCRIBE_KEY("mysubscibekey"),
-    SECRET_KEY("mysecretkey");
+    PUBLISH_KEY("pub-c-5aafc894-23fd-41a1-9acf-dbea80bbd8fa"),
+    SUBSCRIBE_KEY("sub-c-087ef208-3e4d-11ec-b2c1-a25c7fcd9558"),
+    SECRET_KEY("sec-c-ZmU2OGFhMDYtYmZkYS00NTU3LWE4NzAtNjE1MjdhYzc4NGZl");
     private String value;
     credentials(String value){
         this.value = value;
@@ -40,7 +40,7 @@ public class pubsub{
     blockchain chain;
     private PubNub pubnub;
 
-    pubsub(blockchain chain){
+    public pubsub(blockchain chain){
         this.chain = chain;
 
         PNConfiguration pnConfiguration = new PNConfiguration();

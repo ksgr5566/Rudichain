@@ -6,14 +6,14 @@ import java.util.ArrayList;
 import com.google.gson.Gson; 
 
 public class blockchain{
-  ArrayList<block> chain;
+  public ArrayList<block> chain;
 
-  blockchain(){
+  public blockchain(){
     this.chain = new ArrayList<block>();
     chain.add(block.genesis());
   }
 
-  void addBlock(String data){
+  public void addBlock(String data){
     final block newBlock = block.mineBlock(this.chain.get(this.chain.size()-1),data);
     this.chain.add(newBlock);
   }
