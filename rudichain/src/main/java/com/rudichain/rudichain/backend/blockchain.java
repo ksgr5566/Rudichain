@@ -48,7 +48,7 @@ public class blockchain{
     return true;
   }
 
-  void replaceChain(blockchain toReplace){
+  public void replaceChain(blockchain toReplace){
 
     if(toReplace.chain.size()<this.chain.size()) return;
     

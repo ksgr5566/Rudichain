@@ -3,6 +3,7 @@ package com.rudichain.rudichain.network;
 import java.util.Arrays;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.pubnub.api.PNConfiguration;
 import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.SubscribeCallback;
@@ -56,15 +57,19 @@ public class pubsub{
             public void message(PubNub pubnub, PNMessageResult message){
                 System.out.println("Message received from: " + message.getChannel()
                                     + "  Message: " + message.getMessage());
+
+                JsonObject jsonObject = message.getMessage().getAsJsonObject();
+                Gson gson= new Gson();
+                blockchain obj = gson.fromJson(jsonObject.toString(),blockchain.class);
+                chain.replaceChain(obj);
+                
             }
 
             public void status(PubNub pubnub, PNStatus status) {}
-            public void signal(PubNub pubnub, PNSignalResult pnSignalResult) {}
-            
+            public void signal(PubNub pubnub, PNSignalResult pnSignalResult) {} 
             public void membership(PubNub pubnub, PNMembershipResult pnMembershipResult) {}
             public void messageAction(PubNub pubnub, PNMessageActionResult pnMessageActionResult) {}
             public void presence(PubNub pubnub, PNPresenceEventResult presence) {}
-
             public void file(PubNub pubnub, PNFileEventResult pnFileEventResult) {}
             public void channel(PubNub pubnub, PNChannelMetadataResult pnChannelMetadataResult) {}
             public void uuid(PubNub pubnub, PNUUIDMetadataResult pnUUIDMetadataResult) {}

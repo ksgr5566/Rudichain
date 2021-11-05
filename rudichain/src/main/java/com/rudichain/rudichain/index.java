@@ -10,20 +10,19 @@ import org.springframework.web.servlet.ModelAndView;
 import com.google.gson.Gson; 
 
 import com.rudichain.rudichain.backend.blockchain;
-//import com.rudichain.rudichain.network.pubsub;
+import com.rudichain.rudichain.network.pubsub;
 
 @RestController
 
 public class index{
 
     blockchain chain = new blockchain();
-    //pubsub client = new pubsub(chain);
-
-    Gson gson = new Gson();
+    pubsub client = new pubsub(chain);
 
     @RequestMapping("/api/blocks")
     @GetMapping()
     public String RespondWithChain(){
+        Gson gson = new Gson();
         return gson.toJson(chain.chain);
     }
 
@@ -31,8 +30,12 @@ public class index{
     @PostMapping()
     public ModelAndView PostData(@RequestBody String data){
         chain.addBlock(data);
+        client.broadcastChain();
+        System.out.println("Redirecting to /api/blocks....");
         return new ModelAndView("redirect:/api/blocks");
     }
+
+    //to be thorouly tested
 
     
 }

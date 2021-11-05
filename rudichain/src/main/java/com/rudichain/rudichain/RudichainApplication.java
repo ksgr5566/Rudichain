@@ -17,7 +17,8 @@ public class RudichainApplication {
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args){
+		
 		if(available(8080)){
 			System.setProperty("server.port", "8080");
 		}
