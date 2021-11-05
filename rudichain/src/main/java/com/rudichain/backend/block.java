@@ -21,7 +21,7 @@ public class block{
         this.difficulty = difficulty;
      }
 
-     static block genisis(){
+     static block genesis(){
          return new block("null","null","null",1,0,constants.INITIAL_DIFFICULTY.getValue());
      }
 
