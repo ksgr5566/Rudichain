@@ -23,6 +23,7 @@ public class index{
     @GetMapping()
     public String RespondWithChain(){
         Gson gson = new Gson();
+        client.broadcastChain();
         return gson.toJson(chain.chain);
     }
 
