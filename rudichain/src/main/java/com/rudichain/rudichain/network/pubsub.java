@@ -3,10 +3,15 @@ package com.rudichain.rudichain.network;
 import java.util.Arrays;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.pubnub.api.PNConfiguration;
 import com.pubnub.api.PubNub;
+import com.pubnub.api.callbacks.PNCallback;
 import com.pubnub.api.callbacks.SubscribeCallback;
+import com.pubnub.api.models.consumer.PNPublishResult;
 import com.pubnub.api.models.consumer.PNStatus;
 import com.pubnub.api.models.consumer.objects_api.channel.PNChannelMetadataResult;
 import com.pubnub.api.models.consumer.objects_api.membership.PNMembershipResult;
@@ -17,7 +22,7 @@ import com.pubnub.api.models.consumer.pubsub.PNSignalResult;
 import com.pubnub.api.models.consumer.pubsub.files.PNFileEventResult;
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult;
 
-import com.rudichain.rudichain.backend.blockchain;
+import com.rudichain.rudichain.backend.*;
 
 enum credentials{
     PUBLISH_KEY("pub-c-5aafc894-23fd-41a1-9acf-dbea80bbd8fa"),
@@ -38,7 +43,7 @@ enum channels{
 
 public class pubsub{
 
-    blockchain chain;
+    public blockchain chain;
     private PubNub pubnub;
 
     public pubsub(blockchain chain){
@@ -55,14 +60,62 @@ public class pubsub{
 
         this.pubnub.addListener(new SubscribeCallback() {
             public void message(PubNub pubnub, PNMessageResult message){
+                JsonElement receivedMessageObject = message.getMessage();
                 System.out.println("Message received from: " + message.getChannel()
-                                    + "  Message: " + message.getMessage());
+                                    + "  Message: " + receivedMessageObject);
 
-                JsonObject jsonObject = message.getMessage().getAsJsonObject();
-                Gson gson= new Gson();
-                blockchain obj = gson.fromJson(jsonObject.toString(),blockchain.class);
-                chain.replaceChain(obj);
+                String messageOb = receivedMessageObject.toString();
+                String temp = messageOb.replaceAll("\\"+"\\","");
+                String withoutLastCharacter = temp.substring(0, temp.length() - 1);
+                String messageObj = withoutLastCharacter.substring(1);
+
+                System.out.println(messageObj);
+
+                JsonObject jsonElement = new Gson().fromJson(messageObj, JsonObject.class);
+
                 
+
+                String blockArray = jsonElement.get("chain").toString();
+
+                JsonElement jsonBlockArray = JsonParser.parseString(blockArray);
+
+                JsonArray jsonArray = jsonBlockArray.getAsJsonArray();
+
+                blockchain toReplace = new blockchain();
+                toReplace.chain.clear();
+
+                for(int i=0; i<=jsonArray.size()-1; i++){
+
+                    String foo = jsonArray.get(i).toString();
+                    JsonObject jsonFoo = new Gson().fromJson(foo, JsonObject.class);
+
+                    String lastHash, hash, data;
+                    long timestamp, nonce;
+                    int difficulty;
+                    
+                    lastHash = jsonFoo.get("lastHash").toString();
+                    hash = jsonFoo.get("hash").toString();
+                    data = jsonFoo.get("data").toString();
+
+                    lastHash = lastHash.replace("\"", "");
+                    hash = hash.replace("\"", "");
+                    data = data.replace("\"", "");
+
+                    timestamp = Long.parseLong(jsonFoo.get("timestamp").toString());
+                    nonce = Long.parseLong(jsonFoo.get("nonce").toString());
+                    difficulty = Integer.parseInt(jsonFoo.get("difficulty").toString());
+
+                    block receivedBlock = new block(lastHash, hash, data, timestamp, nonce, difficulty);
+
+                    toReplace.chain.add(receivedBlock);
+
+                }
+                
+
+                chain.replaceChain(toReplace);
+
+                // System.out.println("ToReplace: " + gson.toJson(obj));
+                 
             }
 
             public void status(PubNub pubnub, PNStatus status) {}
@@ -80,7 +133,19 @@ public class pubsub{
 
     public void broadcastChain(){
         String message = new Gson().toJson(this.chain);
-        this.pubnub.publish().message(message).channel(channels.BLOCKCHAIN.name());
+        //JsonObject jsonObject = JsonParser.parseString(message).getAsJsonObject();
+        this.pubnub.publish().message(message).channel(channels.BLOCKCHAIN.name()).async(new PNCallback<PNPublishResult>() {
+            @Override
+            public void onResponse(PNPublishResult result, PNStatus status) {
+                // handle publish result, status always present, result if successful
+                // status.isError() to see if error happened
+                if(!status.isError()) {
+                    System.out.println("pub timetoken: " + result.getTimetoken());
+                }
+                System.out.println("pub status code: " + status.getStatusCode());
+            }
+        });
+        System.out.println("broadcasting to " + channels.BLOCKCHAIN.name());
     }
 
     //to implement broadcastTransactions() method

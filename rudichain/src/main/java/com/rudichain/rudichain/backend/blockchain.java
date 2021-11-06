@@ -13,6 +13,10 @@ public class blockchain{
     chain.add(block.genesis());
   }
 
+  public blockchain(ArrayList<block> chain){
+    this.chain = chain;
+  }
+
   public void addBlock(String data){
     final block newBlock = block.mineBlock(this.chain.get(this.chain.size()-1),data);
     this.chain.add(newBlock);
@@ -57,6 +61,12 @@ public class blockchain{
     //toadd: validateTransaactions and onSuccess
     
     this.chain = toReplace.chain;
+
+
+    Gson gson = new Gson();
+    System.out.println(gson.toJson(toReplace.chain));
+
+    System.out.println("the incoming chain replaced the original one");
 
   }
 

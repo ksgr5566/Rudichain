@@ -12,7 +12,7 @@ public class block{
      long timestamp, nonce;
      int difficulty;
 
-     block(String lastHash, String hash, String data, long timestamp, long nonce, int difficulty){
+     public block(String lastHash, String hash, String data, long timestamp, long nonce, int difficulty){
         this.timestamp = timestamp;
         this.lastHash = lastHash;
         this.hash = hash;
