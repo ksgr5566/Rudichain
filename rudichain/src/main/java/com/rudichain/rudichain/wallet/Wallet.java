@@ -41,5 +41,6 @@ public class Wallet{
 class InvalidTransaction extends Exception {  
     public InvalidTransaction(String errorMessage) {  
     super(errorMessage);  
-    }  
+    }
+      
 }  
