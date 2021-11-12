@@ -20,10 +20,14 @@ public class ECDSA{
         return keyPair;
     }
     
-    public ECDSA() throws Exception{
-        BigInteger privKey = Keys.createEcKeyPair().getPrivateKey();
-        BigInteger pubKey = Sign.publicKeyFromPrivate(privKey);
-        this.keyPair = new ECKeyPair(privKey, pubKey);
+    public ECDSA(){
+        try{
+            BigInteger privKey = Keys.createEcKeyPair().getPrivateKey();
+            BigInteger pubKey = Sign.publicKeyFromPrivate(privKey);
+            this.keyPair = new ECKeyPair(privKey, pubKey);
+        }catch(Exception e){
+            System.out.println("Exception caught in ECDSA");
+        }
     }
 
     public static boolean verifySignature(BigInteger pubKey, String data, Sign.SignatureData signature) throws SignatureException{

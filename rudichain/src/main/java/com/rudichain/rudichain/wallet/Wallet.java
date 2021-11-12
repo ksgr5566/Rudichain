@@ -13,12 +13,18 @@ public class Wallet{
 
     ECDSA keys;
     double balance;
-    public final String publicKey = keys.getPublic();
-    final BigInteger pubKey = keys.getPublicKey();
+    public String publicKey;
+    BigInteger pubKey; 
 
-    public Wallet() throws Exception{
-        this.keys = new ECDSA();
-        balance = 0;
+    public Wallet(){
+        try{
+            this.keys = new ECDSA();
+            this.pubKey = keys.getPublicKey();
+            this.publicKey = keys.getPublic();
+        }catch(Exception e){
+            System.out.println("Exception caught while creating ECDSA in wallet");
+        }
+        this.balance = 1000;
     }
 
     Sign.SignatureData sign(Map<String,Double> OutputMap){
@@ -28,7 +34,7 @@ public class Wallet{
         return Sign.signMessage(msgHash, keys.getKeys(), false);
     }
 
-    Transaction createTransaction(String recipient, double amount) throws InvalidTransaction{
+    public Transaction createTransaction(String recipient, double amount) throws InvalidTransaction{
         if(amount > this.balance){
             throw new InvalidTransaction("Amount exceeds Balance!");
         }
@@ -37,10 +43,3 @@ public class Wallet{
     }
 
 }
-
-class InvalidTransaction extends Exception {  
-    public InvalidTransaction(String errorMessage) {  
-    super(errorMessage);  
-    }
-      
-}  
