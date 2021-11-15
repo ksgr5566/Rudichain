@@ -100,11 +100,15 @@ public class blockchain implements constants{
             System.err.println("Invalid Transaction!");
             return false;
           }
-          double realBalance = Wallet.calcBalance(newChain, ECDSA.compressPubKey(x.input.address));
-          if(x.input.amount!=realBalance){
-            System.err.println("Invalid amount in Transaction");
-            return false;
-          }
+          //......................................................................................
+          //this below condition needs to be tested for various scenarios
+          //......................................................................................
+          // double realBalance = Wallet.calcBalance(this, ECDSA.compressPubKey(x.input.address));
+          // if(x.input.amount!=realBalance){
+          //   System.err.println("Invalid amount in Transaction");
+          //   return false;
+          // }
+          //......................................................................................
           if(transactionSet.contains(x)){
             System.err.println("Identical transactions!!");
             return false;
