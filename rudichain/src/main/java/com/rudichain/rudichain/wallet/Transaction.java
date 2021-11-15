@@ -1,30 +1,38 @@
 package com.rudichain.rudichain.wallet;
 
-import java.math.BigInteger;
 import java.security.SignatureException;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.web3j.crypto.Sign;
-
 import com.google.gson.Gson;
+
 import com.rudichain.rudichain.cryptography.ECDSA;
+import com.rudichain.rudichain.constants;
 
-public class Transaction{
+public class Transaction implements constants{
 
-    Map<String,Double> OutputMap;
-    Input input;
-    String id;
+    public Map<String,Double> OutputMap;
+    public Input input;
+    public String id;
 
-    //, Map<String,Double> outputMap, Map<String,Object> Input
 
     Transaction(Wallet senderWallet, String recipient, double amount){
-        UUID uuid = UUID.randomUUID();
-        this.id = uuid.toString();
+        this.id = UUID.randomUUID().toString();
         createOutputMap(senderWallet, recipient, amount);
-        input = new Input(senderWallet, OutputMap);
+        this.input = new Input(senderWallet, OutputMap);
+    }
+
+    Transaction(Map<String,Double> map){
+        this.id = UUID.randomUUID().toString();
+        this.OutputMap = map;
+        this.input = null;
+    }
+
+    public Transaction(){
+        this.OutputMap = null;
+        this.input = null;
+        this.id = null;
     }
 
     void createOutputMap(Wallet senderWallet, String recipient, double amount){
@@ -41,7 +49,7 @@ public class Transaction{
         return map;     
     }
 
-    static boolean validTransaction(Transaction transaction){
+    public static boolean validTransaction(Transaction transaction){
 
         double outputTotal = 0;
         for (Double val : transaction.OutputMap.values()){
@@ -49,7 +57,7 @@ public class Transaction{
         }
         
         if(transaction.input.amount != outputTotal){
-            System.out.println("Invalid transaction: Amount doesn't match ->" + ECDSA.compressPubKey(transaction.input.address));
+            System.err.println("Invalid transaction: Amount doesn't match ->" + ECDSA.compressPubKey(transaction.input.address));
             return false;
         }
 
@@ -58,51 +66,41 @@ public class Transaction{
 
         try{
             if(!ECDSA.verifySignature(transaction.input.address, data, transaction.input.signature)){
-                System.out.println("Invalid transaction: Unverified Signature  ->" + ECDSA.compressPubKey(transaction.input.address));
+                System.err.println("Invalid transaction: Unverified Signature  ->" + ECDSA.compressPubKey(transaction.input.address));
                 return false;
             }
         }catch(SignatureException e){
-            System.out.println("Exception caught at verifySignature in Transaction.java");
+            System.err.println("Exception caught at verifySignature in Transaction.java");
             e.printStackTrace();
         }
 
         return true;
     }
 
-    void update(Wallet senderWallet, String recipient, double amount) throws InvalidTransaction{
+    public void update(Wallet senderWallet, String recipient, double amount) throws InvalidTransaction{
         if(amount > this.OutputMap.get(senderWallet.publicKey)){
             throw new InvalidTransaction("Amount exceeds Balance!");
         }
 
-        this.OutputMap = createMap(senderWallet, recipient, amount);
-        //........................................................
+        Map<String,Double> map = new HashMap<>(OutputMap);
+        
         double k=0;
         if(!this.OutputMap.containsKey(recipient)){
-            this.OutputMap.replace(recipient, amount);
+            map.put(recipient, amount);
         }else{
             k = this.OutputMap.get(recipient);
-            this.OutputMap.replace(recipient, k+amount);
+            map.replace(recipient, k+amount);
         }
         k = this.OutputMap.get(senderWallet.publicKey);
-        this.OutputMap.replace(senderWallet.publicKey, k-amount);
-        //.......................................................
+        map.replace(senderWallet.publicKey, k-amount);
+        
+        this.OutputMap = map;
         this.input = new Input(senderWallet, OutputMap);
     }
-    
-}
 
-class Input{
-    long timestamp;
-    double amount;
-    BigInteger address;
-    Sign.SignatureData signature;
-
-    Input(Wallet senderWallet, Map<String,Double> OutputMap){
-        this.timestamp = (new Timestamp(System.currentTimeMillis())).getTime();
-        this.amount = senderWallet.balance;
-        this.address = senderWallet.pubKey;
-        this.signature = senderWallet.sign(OutputMap);
+    public static Transaction rewardTransaction(Wallet minerWallet){
+        Map<String,Double> map = new HashMap<String,Double>(Map.of(minerWallet.publicKey, MINING_REWARD));
+        return new Transaction(map);
     }
-
-
+    
 }
