@@ -7,7 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RudichainApplication {
+public class RudichainApplication implements constants{
 
 	private static boolean available(int port) {
 		try (Socket ignored = new Socket("localhost", port)) {
@@ -19,8 +19,8 @@ public class RudichainApplication {
 
 	public static void main(String[] args){
 		
-		if(available(8080)){
-			System.setProperty("server.port", "8080");
+		if(available(DEFAULT_PORT)){
+			System.setProperty("server.port", String.valueOf(DEFAULT_PORT));
 		}
 		SpringApplication.run(RudichainApplication.class, args);
 	}
