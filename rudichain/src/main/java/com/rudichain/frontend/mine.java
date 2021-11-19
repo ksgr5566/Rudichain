@@ -56,10 +56,16 @@ public class mine extends JFrame{
         mineButton.setPreferredSize(new Dimension(250, 40));
         mineButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                HomePage.miner.mineTransactions();
-                JOptionPane.showMessageDialog(new JFrame(), "Please wait while Mining is in Progess....", "Be Patient!",JOptionPane.INFORMATION_MESSAGE);
-                oneFrame = false;
-                dispose();
+                int res = JOptionPane.showConfirmDialog(new JFrame(), "If you proceed to mine, you are allowing the program" +
+                                                                      " to use your computer CPU power. The wallet UI would be frozen" +
+                                                                      " till the mining succesfully takes place. Press OK if you want to proceed." +
+                                                                      "Kill the program through terminal and login again to stop the process!!!", "Read Carefully!!",JOptionPane.OK_CANCEL_OPTION);
+                if(res == JOptionPane.OK_OPTION){
+                    oneFrame = false;
+                    dispose();
+                    HomePage.miner.mineTransactions();
+                }
+                
             }
         });
 

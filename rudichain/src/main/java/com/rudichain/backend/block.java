@@ -27,7 +27,7 @@ public class block implements constants{
 
      static int adjustDifficulty(block Block, long timestamp){
          int difficulty = Block.difficulty;
-         if(difficulty<1) return 1;
+         if(difficulty<5) return 4;
          if((timestamp - Block.timestamp) > MINE_RATE) return difficulty-1;
          return difficulty+1;
      }
@@ -41,10 +41,14 @@ public class block implements constants{
 
          do{
              nonce++;
+             System.out.println(nonce);
              timestamp = (new Timestamp(System.currentTimeMillis())).getTime();
              difficulty = block.adjustDifficulty(prevBlock, timestamp);
              hash = Hash.SHA256(lastHash, data, timestamp, nonce, difficulty);
-         } while(!(((new String(DatatypeConverter.parseHexBinary(hash), StandardCharsets.UTF_8)).substring(0, difficulty)).equals("0".repeat(difficulty))));
+             System.out.println(hash);
+             //System.out.println(new String(DatatypeConverter.parseHexBinary(hash), StandardCharsets.UTF_8));
+         } //while(!(((new String(DatatypeConverter.parseHexBinary(hash), StandardCharsets.UTF_8)).substring(0, difficulty)).equals("0".repeat(difficulty))));
+         while(!((hash.substring(0, difficulty)).equals("0".repeat(difficulty))));
 
          return new block(lastHash, hash, data, timestamp, nonce, difficulty);
 
