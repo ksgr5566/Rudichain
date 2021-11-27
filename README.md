@@ -11,7 +11,7 @@ can be implemented in a concise way using pure `Java`. <br />
 
 1. If you have JRE and Maven installed, then download zip and:
 ```
-cd Rudichain/rudichain
+cd Rudichain-main/rudichain
 mvn exec:java
 ```
 
