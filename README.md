@@ -119,9 +119,9 @@ Visit our backend version of Rudichain [here](https://github.com/ksgr5566/Rudich
 
 
 <br />
-## License
+# License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the Apache License 2.0 - see the [LICENSE.md](https://github.com/ksgr5566/Rudichain/blob/main/LICENSE) file for details.
 
 
 
