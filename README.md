@@ -15,7 +15,7 @@ cd Rudichain-main/rudichain
 mvn exec:java
 ```
 
-2. For Windows user only: If you don't have the above mentioned software installed, then 
+2. For Windows users only: If you don't have the above mentioned software installed, then 
    download the zip [here](https://drive.google.com/file/d/1tq16-CS3IyDvvEfvmQcDUi2hUYleW7ce/view?usp=sharing), then: 
 - Extract RudiWallet and go to rudichain sub-folder then, double click or run the `run` windows batch file.
 
