@@ -4,8 +4,6 @@ The goal of Rudichain is to simulate how transactions occur in real time on a bl
 “production ready” implementation of a cryptocurrency, but rather tries to show that the basic principles in a cryptocurrency 
 can be implemented in a concise way using pure `Java`. <br />
 
-**Note: *This a real time application, and can be used just like any other cyrptocurrency wallet. Just that this a very basic version and is not scaled for large amount of users and data.***
-
 
 # Installation
 
