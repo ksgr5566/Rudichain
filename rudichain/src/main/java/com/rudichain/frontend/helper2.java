@@ -41,7 +41,7 @@ import com.rudichain.backend.block;
 import com.rudichain.constants;
 
 public class helper2 extends JFrame implements constants{
-
+    
         helper2(int i){
 
             block k = HomePage.chain.chain.get(i);
